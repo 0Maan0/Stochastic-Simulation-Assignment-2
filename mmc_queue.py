@@ -39,20 +39,21 @@ def simulate_MMn_queue(lam, mu, n, max_customers = 10000, seed=None):
         np.random.seed(seed)
     rho = system_load(lam, mu, n)
     if rho >= 1:
-        ValueError("System is unstable")
+        raise ValueError("System is unstable")
     env = sp.Environment()
     server = sp.Resource(env, capacity=n)
     waiting_times = []
     env.process(source(env, lam, server, mu, waiting_times, max_customers))
     env.run()
-    return waiting_times
+    return rho, waiting_times
 
 lambd = 1
 mu = 1
 n_tests = [1, 2, 4]
 for n in n_tests:
-    simulation = simulate_MMn_queue(lambd, mu, n, seed=0)
-    print(f"for n = {n} the mean waiting time is {np.mean(simulation)} and the std is {np.std(simulation)}.")	
+    rho, simulation = simulate_MMn_queue(lambd, mu, n, seed=0)
+    print(f"for n = {n}, with {rho=}, the mean waiting time is {np.mean(simulation)} and the std is {np.std(simulation)}.")	
+
 '''
 def steady_state_probability(rho, n):
     part1 = np.sum((n*rho)**i / np.math.factorial(i) for i in range(n))
