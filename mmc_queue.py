@@ -13,7 +13,7 @@ def system_load(lam, mu, n):
     rho = lam / (n*mu)
     return rho
 
-def service(env, name, server, waiting_times, service_time):
+def service(env, server, waiting_times, service_time):
     '''
     The traject of a customer in the system. (Arrival -> Service -> Departure).
     '''
@@ -23,7 +23,7 @@ def service(env, name, server, waiting_times, service_time):
         wait = env.now - arrive
         waiting_times.append(wait)
         yield env.timeout(service_time) # Wait for the service to finish.
-    
+ 
 def source(env, lam, server, mu, waiting_times, max_customers):
     '''
     Generate customers at rate lambda.
@@ -32,9 +32,9 @@ def source(env, lam, server, mu, waiting_times, max_customers):
         inter_arrival = np.random.exponential(1/lam)
         yield env.timeout(inter_arrival)
         service_time = np.random.exponential(1/mu)
-        env.process(service(env, f'Customer {i}', server, waiting_times, service_time))
+        env.process(service(env, server, waiting_times, service_time))
 
-def simulate_MMn_queue(lam, mu, n, max_customers = 10000, seed=None):
+def simulate_mmn_queue(lam, mu, n, max_customers = 10000, seed=None):
     if seed:
         np.random.seed(seed)
     rho = system_load(lam, mu, n)
@@ -47,12 +47,12 @@ def simulate_MMn_queue(lam, mu, n, max_customers = 10000, seed=None):
     env.run()
     return waiting_times
 
-lambd = 1
-mu = 1
+LAMBDA = 1
+MU = 1
 n_tests = [1, 2, 4]
 for n in n_tests:
-    simulation = simulate_MMn_queue(lambd, mu, n, seed=0)
-    print(f"for n = {n} the mean waiting time is {np.mean(simulation)} and the std is {np.std(simulation)}.")	
+    simulation = simulate_MMn_queue(LAMBDA, MU, n, seed=0)
+    print(f"for n = {n} the mean waiting time is {np.mean(simulation)} and the std is {np.std(simulation)}.")
 '''
 def steady_state_probability(rho, n):
     part1 = np.sum((n*rho)**i / np.math.factorial(i) for i in range(n))
