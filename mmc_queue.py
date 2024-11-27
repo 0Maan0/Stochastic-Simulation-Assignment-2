@@ -27,8 +27,8 @@ def source(env, lam, server, mu, waiting_times, max_customers):
     '''
     Generate customers at rate lambda.
     '''
-    for i in range(max_customers):
-        inter_arrival = np.random.exponential(1/lam)
+    for _ in range(max_customers):
+        inter_arrival = np.random.exponential(1/lam) # Time between arrivals. 
         yield env.timeout(inter_arrival)
         service_time = np.random.exponential(1/mu)
         env.process(service(env, server, waiting_times, service_time))
