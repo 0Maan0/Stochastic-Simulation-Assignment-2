@@ -2,6 +2,7 @@
 This module contains the main implementation of an M/M/N queue simulation.
 '''
 import numpy as np
+import matplotlib.pyplot as plt
 import simpy
 
 def system_load(lam, mu, n):
@@ -28,7 +29,7 @@ def source(env, lam, server, mu, waiting_times, max_customers):
     Generate customers at rate lambda.
     '''
     for _ in range(max_customers):
-        inter_arrival = np.random.exponential(1/lam) # Time between arrivals. 
+        inter_arrival = np.random.exponential(1/lam) # Time between arrivals.
         yield env.timeout(inter_arrival)
         service_time = np.random.exponential(1/mu)
         env.process(service(env, server, waiting_times, service_time))
@@ -42,7 +43,7 @@ def simulate_mmn_queue(lam, mu, n, max_customers = 10000, seed=None):
         np.random.seed(seed)
     rho = system_load(lam, mu, n)
     if rho >= 1:
-        ValueError("System is unstable")
+        raise ValueError("System is unstable")
     env = simpy.Environment()
     server = simpy.Resource(env, capacity=n)
     waiting_times = []
@@ -51,18 +52,25 @@ def simulate_mmn_queue(lam, mu, n, max_customers = 10000, seed=None):
     return waiting_times
 
 LAMBDA = 1
-MU = 1
+mu_values = np.linspace(1.1, 4, 10)
 n_tests = [1, 2, 4]
-for n in n_tests:
-    simulation = simulate_mmn_queue(LAMBDA, MU, n, seed=0)
-    print(f"for n = {n} the mean waiting time is {np.mean(simulation)} and the std is {np.std(simulation)}.")
-'''
-def steady_state_probability(rho, n):
-    part1 = np.sum((n*rho)**i / np.math.factorial(i) for i in range(n))
-    part2 = ((n*rho)) **n / np.math.factorial(n) * (1/(1 - rho))
-    p0 = 1 / (part1 + part2)
-    return p0
+for MU in mu_values:
+    for n in n_tests:
+        simulation = simulate_mmn_queue(LAMBDA, MU, n)
+        #print(f"for mu = {MU} and n = {n} the mean waiting time is {np.mean(simulation)} +- {np.std(simulation)}.")
 
-        # Mean number of custormers in the system
-    N = n*rho + rho*(n*rho)**n / (np.math.factorial(n)) *p0/(1-rho)
-'''
+MU = 1.1
+mean_waiting_times = []
+std_waiting_times = []
+precision = 0.01
+std = 1
+mean = 0
+while std > precision* mean:
+    simulation = simulate_mmn_queue(LAMBDA, MU, 2) 
+    mean_waiting_times.append(np.mean(simulation))
+    std_waiting_times.append(np.std(simulation))
+
+    mean = np.mean(mean_waiting_times)
+    std = np.std(mean_waiting_times)
+print(f"for mu = {MU} and n = {2} the mean waiting time is {mean} +- {std}.")
+
