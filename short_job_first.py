@@ -4,6 +4,9 @@ This module contains the main implementation of an M/M/N queue simulation.
 import numpy as np
 import matplotlib.pyplot as plt
 import simpy
+
+
+
 class sims():
 
     def __init__(self, lam, mu, n):
@@ -16,20 +19,36 @@ class sims():
         self.n = n
         self.mu = mu
 
-        self.queue = {} # set of tuples: (p, service_time)
+        self.queue_priority = [] # set of tuples: (p, service_time)
+        self.queue_time = [] # set of tuples: (p, service_time)
 
         if self.rho >= 1:
             raise ValueError("System is unstable")
 
-    def service(self, id, service_time, priority):
+    def service(self, service_time, priority):
         '''
         The traject of a customer in the system. (Arrival -> Service -> Departure).
         '''
         arrive = self.env.now
+
+        print('-------------------------')
+        print(self.queue_priority)
+        print(self.queue_time)
+        print('-------------------------')
+        print()
+
         with self.server.request(priority=priority) as req:
             yield req # Wait until the request is granted.
             wait = self.env.now - arrive
-            self.queue.remove((priority, service_time))
+
+            # update queue of priorities, so that new customers get a relevant priority
+            # takeout shortest job. since it sjf
+            index = np.array(self.queue_time).argmin()
+            print(service_time, self.queue_time[index] )
+            self.queue_time.pop(index)
+            self.queue_priority.pop(index)
+            
+
             self.waiting_times.append(wait)
             yield self.env.timeout(service_time) # Wait for the service to finish.
 
@@ -44,16 +63,14 @@ class sims():
             yield self.env.timeout(inter_arrival)
             service_time = np.random.exponential(1/self.mu)
             # find right p: priority
-            priority = max_customers
-            for queue_priority, queue_time in self.queue:
-                if service_time < queue_time:
-                    priority = queue_priority - 1
-            self.queue.append((priority, service_time))
-            id = len(self.queue)
-            #print(self.queue)
-            self.env.process(self.service(id, service_time, priority))
+            priority = int(service_time*1000)
 
-    def simulate_mmn_queue(self, max_customers = 10000, seed=None):
+            self.queue_priority.append(priority)
+            self.queue_time.append(service_time)
+
+            self.env.process(self.service(service_time, priority))
+
+    def simulate_mmn_queue(self, max_customers = 200, seed=None):
         '''
         Start environment and run the simulation.
         return: list
@@ -69,29 +86,10 @@ class sims():
         return self.rho, self.waiting_times
 
 LAMBDA = 1
-mu_values = np.linspace(1.1, 4, 10)
-n_tests = [1, 2, 4]
+MU = 0.6
+n = 2
 
 
-for MU in mu_values:
-    for n in n_tests:
-        sim = sims(LAMBDA, MU, n)
-        rho, simulation = sim.simulate_mmn_queue()
-        print(f"for mu = {MU}, n = {n} and {rho=} the mean waiting time is {np.mean(simulation)} +- {np.std(simulation)}.")
-    quit()
-
-MU = 1.1
-mean_waiting_times = []
-std_waiting_times = []
-precision = 0.01
-std = 1
-mean = 0
-while std > precision* mean:
-    simulation = simulate_mmn_queue(LAMBDA, MU, 2) 
-    mean_waiting_times.append(np.mean(simulation))
-    std_waiting_times.append(np.std(simulation))
-
-    mean = np.mean(mean_waiting_times)
-    std = np.std(mean_waiting_times)
-print(f"for mu = {MU} and n = {2} the mean waiting time is {mean} +- {std}.")
-
+sim = sims(LAMBDA, MU, n)
+rho, simulation = sim.simulate_mmn_queue()
+print(f"for mu = {MU}, n = {n} and {rho=} the mean waiting time is {np.mean(simulation)} +- {np.std(simulation)}.")
