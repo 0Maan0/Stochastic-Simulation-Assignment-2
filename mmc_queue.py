@@ -50,7 +50,7 @@ LAMBDA = 1
 MU = 1
 n_tests = [1, 2, 4]
 for n in n_tests:
-    simulation = simulate_MMn_queue(LAMBDA, MU, n, seed=0)
+    simulation = simulate_mmn_queue(LAMBDA, MU, n, seed=0)
     print(f"for n = {n} the mean waiting time is {np.mean(simulation)} and the std is {np.std(simulation)}.")
 '''
 def steady_state_probability(rho, n):
