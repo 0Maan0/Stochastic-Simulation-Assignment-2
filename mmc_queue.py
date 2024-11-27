@@ -34,6 +34,10 @@ def source(env, lam, server, mu, waiting_times, max_customers):
         env.process(service(env, server, waiting_times, service_time))
 
 def simulate_mmn_queue(lam, mu, n, max_customers = 10000, seed=None):
+    '''
+    Start environment and run the simulation.
+    return: list
+    '''
     if seed:
         np.random.seed(seed)
     rho = system_load(lam, mu, n)
