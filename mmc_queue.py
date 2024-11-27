@@ -1,5 +1,5 @@
 '''
-This module contains the main implementation of an mmn queue simulation.
+This module contains the main implementation of an M/M/N queue simulation.
 '''
 import numpy as np
 import matplotlib.pyplot as plt
