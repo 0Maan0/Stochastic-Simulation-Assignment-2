@@ -2,8 +2,7 @@
 This module contains the main implementation of an M/M/N queue simulation.
 '''
 import numpy as np
-import matplotlib.pyplot as plt
-import simpy as sp
+import simpy
 
 def system_load(lam, mu, n):
     '''
@@ -40,8 +39,8 @@ def simulate_mmn_queue(lam, mu, n, max_customers = 10000, seed=None):
     rho = system_load(lam, mu, n)
     if rho >= 1:
         ValueError("System is unstable")
-    env = sp.Environment()
-    server = sp.Resource(env, capacity=n)
+    env = simpy.Environment()
+    server = simpy.Resource(env, capacity=n)
     waiting_times = []
     env.process(source(env, lam, server, mu, waiting_times, max_customers))
     env.run()
