@@ -49,7 +49,7 @@ def simulate_mmn_queue(lam, mu, n, max_customers = 10000, seed=None):
     waiting_times = []
     env.process(source(env, lam, server, mu, waiting_times, max_customers))
     env.run()
-    return waiting_times
+    return rho, waiting_times
 
 LAMBDA = 1
 mu_values = np.linspace(1.1, 4, 2)
