@@ -113,16 +113,19 @@ print('-----')
 print(np.mean(sim.service_time_list))
 print(np.mean(sim2.service_time_list))
 
-fig, ax = plt.subplots(1, 2, sharey=True)
+fig, ax = plt.subplots(1, 2, sharey=True, sharex=True, gridspec_kw={'wspace': 0.05})
 
-ax[0].scatter(sim.service_time_list, simulation, marker='.', label='SJF', s=50, lw=0, alpha=0.25)
-ax[1].scatter(sim2.service_time_list, sim2.waiting_times, marker='.', label='FIFO', s=50, lw=0, alpha=0.25)
+ax[0].scatter(sim.service_time_list, simulation, marker='.', label='SJF', s=50, lw=0)
+ax[1].scatter(sim2.service_time_list, sim2.waiting_times, marker='.', label='FIFO', s=50, lw=0)
 ax[0].set_ylabel(r'Waiting Time ($t_w$)')
 ax[0].set_xlabel(r'Service Time ($t_s$)')
-ax[1].set_ylabel(r'Waiting Time ($t_w$)')
 ax[1].set_xlabel(r'Service Time ($t_s$)')
 ax[0].legend()
 ax[1].legend()
 
 plt.show()
+plt.savefig(
+      f'Figures/sjf_vs_fifo_n{n}.pdf',
+      bbox_inches='tight', format='pdf'
+)
 
