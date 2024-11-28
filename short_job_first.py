@@ -96,7 +96,7 @@ class sims():
 
 LAMBDA = 1
 MU = 1.1
-n = 1
+n = 2
 
 #shortest and first job plotten
 
@@ -125,7 +125,7 @@ ax[1].legend()
 
 plt.show()
 plt.savefig(
-      f'Figures/sjf_vs_fifo_n{n}.pdf',
+      f'Figures/sjf_vs_fifo_n{n}_rho{rho}.pdf',
       bbox_inches='tight', format='pdf'
 )
 
