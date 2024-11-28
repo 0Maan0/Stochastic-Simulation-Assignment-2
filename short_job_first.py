@@ -58,6 +58,8 @@ class sims():
             yield self.env.timeout(inter_arrival)
 
 
+            # service time distributions:
+
             if self.deterministic:
                 # determintistic dist. 1/mu m/d/n
                 service_time = 1 / self.mu
@@ -71,6 +73,9 @@ class sims():
             else:
                 # exponential dist. m/m/n
                 service_time = np.random.exponential(1/self.mu)
+
+
+            # FIFO or SFJ
 
             if self.sjf:
                 #  set priority based on service time value
@@ -93,7 +98,7 @@ class sims():
             np.random.seed(seed)
 
         self.env = simpy.Environment()
-        self.server = simpy.PriorityResource(self.env, capacity=n)
+        self.server = simpy.PriorityResource(self.env, capacity=self.n)
 
 
         self.env.process(self.source(max_customers))
@@ -105,13 +110,13 @@ MU = 1.1
 n = 2
 
 if True:
-    sim = sims(LAMBDA, MU, n, rho=0.9, tail=True)
+    sim = sims(LAMBDA, MU, n, rho=0.99, tail=True, sjf=True)
     rho, simulation = sim.simulate_queue()
-    print(f"for mu = {sim.mu}, n = {sim.n} and rho = {sim.rho} the mean waiting time is {np.mean(simulation)} +- {np.std(simulation)}, tail = {sim.tail}, sjf = {sim.sjf}, deterministic = {sim.deterministic}.")
+    print(f"for mu = {sim.mu}, n = {sim.n} and rho = {sim.rho} the mean waiting time is {np.mean(simulation)} +- {np.std(simulation)}, tail = {sim.tail}, sjf = {sim.sjf}, deterministic = {sim.deterministic}, mean service time = {np.mean(sim.service_time_list)}")
 
-    sim2 = sims(LAMBDA, MU, n, rho=0.9, tail=False)
+    sim2 = sims(LAMBDA, MU, n, rho=0.99, tail=False)
     _, _ = sim2.simulate_queue()
-    print(f"for mu = {sim2.mu}, n = {sim2.n} and rho = {sim2.rho} the mean waiting time is {np.mean(sim2.waiting_times)} +- {np.std(sim2.waiting_times)}, tail = {sim2.tail}, sjf = {sim2.sjf}., deterministic = {sim2.deterministic}.")
+    print(f"for mu = {sim2.mu}, n = {sim2.n} and rho = {sim2.rho} the mean waiting time is {np.mean(sim2.waiting_times)} +- {np.std(sim2.waiting_times)}, tail = {sim2.tail}, sjf = {sim2.sjf}., deterministic = {sim2.deterministic}., mean service time = {np.mean(sim.service_time_list)}")
 
     print('-----')
     print(np.mean(sim.service_time_list))
