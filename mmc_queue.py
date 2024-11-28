@@ -52,25 +52,34 @@ def simulate_mmn_queue(lam, mu, n, max_customers = 10000, seed=None):
     return rho, waiting_times
 
 LAMBDA = 1
-mu_values = np.linspace(1.1, 4, 10)
+mu_values = np.linspace(1.1, 4, 2)
 n_tests = [1, 2, 4]
 for MU in mu_values:
-    for n in n_tests:
-        rho, simulation = simulate_mmn_queue(LAMBDA, MU, n)
-        #print(f"for mu = {MU}, n = {n} and {rho=} the mean waiting time is {np.mean(simulation)} +- {np.std(simulation)}.")
+    for N in n_tests:
+        simulation = simulate_mmn_queue(LAMBDA, MU, N)
+        print(f"for mu = {MU} and n = {N} the mean waiting time is {np.mean(simulation)} +- {np.std(simulation)}.")
 
-MU = 1.1
+
+MU = 1.2
 mean_waiting_times = []
 std_waiting_times = []
-precision = 0.01
+precision = 0.05
 std = 1
 mean = 0
-while std > precision* mean:
-    simulation = simulate_mmn_queue(LAMBDA, MU, 2) 
-    mean_waiting_times.append(np.mean(simulation))
-    std_waiting_times.append(np.std(simulation))
-
+n = 0
+while std > precision * mean:
+    print(precision * mean)
+    print(n)
+    simulations = [simulate_mmn_queue(LAMBDA, MU, 2, max_customers = 10000) for _ in range(2)]
+    for simulation in simulations:
+        mean_waiting_times.append(np.mean(simulation))
+        std_waiting_times.append(np.std(simulation, ddof=1))
+    n += 2
+    if n < 20:
+        continue
     mean = np.mean(mean_waiting_times)
-    std = np.std(mean_waiting_times)
+    print(len(mean_waiting_times))
+    std = np.std(mean_waiting_times, ddof=1)
+    #print(f"mean: {mean}")
+    print(f"standard deviation: {std}")
 print(f"for mu = {MU} and n = {2} the mean waiting time is {mean} +- {std}.")
-

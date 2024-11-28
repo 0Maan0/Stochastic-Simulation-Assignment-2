@@ -58,10 +58,17 @@ class sims():
 
 
             if self.deterministic:
+                # determintistic dist. 1/mu m/d/n
                 service_time = 1 / self.mu
+
             elif self.tail:
-                pass
+                # long-tail dist. hyperexponential. 
+                if np.random.rand() <= 0.25:
+                    service_time = np.random.exponential(5)
+                else:
+                    service_time = np.random.exponential(1)
             else:
+                # exponential dist. m/m/n
                 service_time = np.random.exponential(1/self.mu)
 
             if self.sjf:
@@ -98,8 +105,10 @@ LAMBDA = 1
 MU = 1.1
 n = 2
 
-#shortest and first job plotten
-
+if True:
+    sim = sims(LAMBDA, MU, n, rho=0.9, tail=True)
+    rho, simulation = sim.simulate_queue()
+    print(f"for mu = {sim.mu}, n = {sim.n} and rho = {sim.rho} the mean waiting time is {np.mean(simulation)} +- {np.std(simulation)}, tail = {sim.tail}, sjf = {sim.sjf}, deterministic = {sim.deterministic}.")
 sim = sims(LAMBDA, MU, n, rho=0.9, sjf=True)
 rho, simulation = sim.simulate_queue()
 print(f"for mu = {sim.mu}, n = {sim.n} and rho = {sim.rho} the mean waiting time is {np.mean(simulation)} +- {np.std(simulation)}, sjf = {sim.sjf}, deterministic = {sim.deterministic}.")
