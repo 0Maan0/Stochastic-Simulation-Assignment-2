@@ -31,6 +31,7 @@ class sims():
         
         self.sjf = sjf
         self.deterministic = deterministic
+        self.tail = tail
 
     def service(self, service_time, priority):
         '''
@@ -59,7 +60,6 @@ class sims():
 
             if self.deterministic:
                 service_time = 1 / self.mu
-
             elif self.tail:
                 pass
             else:
@@ -73,7 +73,7 @@ class sims():
 
             self.env.process(self.service(service_time, priority))
 
-    def simulate_queue(self, max_customers = 1000, seed=None):
+    def simulate_queue(self, max_customers = 10000, seed=None):
         '''
         Start environment and run the simulation.
         return: list
@@ -94,27 +94,45 @@ class sims():
         return self.rho, self.waiting_times
 
 LAMBDA = 1
-MU = 0.6
+MU = 1.1
 n = 1
 
+if False:
+    sim = sims(LAMBDA, MU, n, rho=0.9, sjf=True)
+    rho, simulation = sim.simulate_queue()
+    print(f"for mu = {sim.mu}, n = {sim.n} and rho = {sim.rho} the mean waiting time is {np.mean(simulation)} +- {np.std(simulation)}, sjf = {sim.sjf}, deterministic = {sim.deterministic}.")
 
-sim = sims(LAMBDA, MU, n, rho=0.9, deterministic=True)
-rho, simulation = sim.simulate_queue()
-print(f"for mu = {sim.mu}, n = {sim.n} and rho = {sim.rho} the mean waiting time is {np.mean(simulation)} +- {np.std(simulation)}, sjf = {sim.sjf}, deterministic = {sim.deterministic}.")
+    sim2 = sims(LAMBDA, MU, n, rho=0.9, sjf=False)
+    _, _ = sim2.simulate_queue()
+    print(f"for mu = {sim2.mu}, n = {sim2.n} and rho = {sim2.rho} the mean waiting time is {np.mean(sim2.waiting_times)} +- {np.std(sim2.waiting_times)}, sjf = {sim2.sjf}., deterministic = {sim2.deterministic}.")
 
-sim2 = sims(LAMBDA, MU, n, rho=0.9, deterministic=False)
-_, _ = sim2.simulate_queue()
-print(f"for mu = {sim2.mu}, n = {sim2.n} and rho = {sim2.rho} the mean waiting time is {np.mean(sim2.waiting_times)} +- {np.std(sim2.waiting_times)}, sjf = {sim2.sjf}., deterministic = {sim2.deterministic}.")
+    print('-----')
+    print(np.mean(sim.service_time_list))
+    print(np.mean(sim2.service_time_list))
 
-fig, ax = plt.subplots(1, 2, sharey=True)
+    fig, ax = plt.subplots(1, 2, sharey=True)
 
-ax[0].scatter(sim.service_time_list, simulation, marker='.', label='D')
-ax[1].scatter(sim2.service_time_list, sim2.waiting_times, marker='.', label='M')
-ax[0].set_ylabel('waiting time')
-ax[0].set_xlabel('service time')
-ax[1].set_ylabel('waiting time')
-ax[1].set_xlabel('service time')
-ax[0].legend()
-ax[1].legend()
+    ax[0].scatter(sim.service_time_list, simulation, marker='.', label='sjf')
+    ax[1].scatter(sim2.service_time_list, sim2.waiting_times, marker='.', label='fifo')
+    ax[0].set_ylabel('waiting time')
+    ax[0].set_xlabel('service time')
+    ax[1].set_ylabel('waiting time')
+    ax[1].set_xlabel('service time')
+    ax[0].legend()
+    ax[1].legend()
 
-plt.show()
+    plt.show()
+if True:
+    sim = sims(LAMBDA, MU, n)
+    M = 900000
+    _, p = sim.simulate_queue(M)
+    wait_list = []
+    for i in range(1000, M, 10000):
+        rho, wl = sim.simulate_queue(i)
+        w = np.mean(wl)
+        wait_list.append(w)
+        print(i, w)
+    wait_list = np.array(wait_list) 
+    x = wait_list - np.mean(p)
+    plt.plot(x)
+    plt.show()
