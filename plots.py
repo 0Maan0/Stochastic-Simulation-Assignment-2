@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mmn_queue import sims
 
-def plot_mean_waiting_times(lambd, mu, n, rho_values, num_simulations, max_customers, starting_amount):
+def plot_mean_waiting_times(lambd, mu, n, rho_values, num_simulations, max_customers, starting_amount, method = 'fifo'):
     '''
     Plot the mean of the mean waiting times for a certain number of simulations. 
     '''
@@ -14,7 +14,14 @@ def plot_mean_waiting_times(lambd, mu, n, rho_values, num_simulations, max_custo
 
     for j, rho in enumerate(rho_values):
         ax = axes[j]
-        sim = sims(lambd, mu, n, rho=rho)
+        if method == 'tail':
+            sim = sims(lambd, mu, n, rho=rho, tail=True)
+        elif method == 'sjf':
+            sim = sims(lambd, mu, n, rho=rho, sjf=True)
+        elif method == 'deterministic':
+            sim = sims(lambd, mu, n, rho=rho, deterministic=True)
+        else:
+            sim = sims(lambd, mu, n, rho=rho)
 
         mean_waiting_times = []
         mean_values = []
@@ -48,8 +55,9 @@ def plot_mean_waiting_times(lambd, mu, n, rho_values, num_simulations, max_custo
         ax.tick_params(axis='x', labelsize=FONTSIZE-2)
         ax.tick_params(axis='y', labelsize=FONTSIZE-2)
     plt.tight_layout()
-    plt.savefig(f'Figures\mean_waiting_times_n{n}.pdf', bbox_inches='tight', format='pdf')
-    plt.show()
+    plt.savefig(f'Figures\mean_waiting_times_n{n}_{method}.pdf', bbox_inches='tight', format='pdf')
+    #plt.show()
+
 
 # Set parameters lambda, mu, rho, number of simulations, max customers and starting value.
 LAMBDA = 1
@@ -60,4 +68,5 @@ MAX_CUST = 1000
 START = 11
 n_list = [1, 2, 4]
 for N in n_list:
-    plot_mean_waiting_times(LAMBDA, MU, N, rho_list, NUM_SIM, MAX_CUST, START)
+    plot_mean_waiting_times(LAMBDA, MU, N, rho_list, NUM_SIM, MAX_CUST, START) # Plot for fifo
+    plot_mean_waiting_times(LAMBDA, MU, N, rho_list, NUM_SIM, MAX_CUST, START, method='sjf') # Plot for sjf   
