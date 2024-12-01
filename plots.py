@@ -1,7 +1,7 @@
 """
 This module visualizes the performance of simulated queuing systems 
 based on the 'mmn_queue.py' module. Including code to plot mean waiting times across multiple 
-simulations for different configurations of queueing systems.
+simulations for different configurations of queueing systems and a plot of SFJ vs FIFO scheduling systems for the same parameters.
 
 Key Features:
 - Generates plots to compare the effect of different server counts (n) and system load factors (ρ) 
@@ -126,7 +126,21 @@ def plot_mean_waiting_times(lam, mu, n_list, rho_values, num_simulations, max_cu
 
 
 def plot_sfj_vs_fifo(lam, mu, n, rho=0.9):
-    """."""
+    """
+    Compare waiting times in SJF and FIFO scheduling systems.
+
+    Parameters:
+        lam (float): Arrival rate (λ) of customers into the system.
+        mu (float): Service rate (μ) of servers.
+        n (int): Number of servers in the system.
+        rho (float, optional): System load factor (ρ). Default is 0.9.
+
+    Outputs:
+        A PDF plot saved to the `Figures/` directory with the filename `sjf_vs_fifo_n{n}_rho{rho}.pdf`.
+        The plot contains two subplots:
+        - Left: SJF waiting times vs. service times.
+        - Right: FIFO waiting times vs. service times.
+    """
 
     #Perform SJF simulation.
     sim_sjf = sims(lam, mu, n, rho, sjf=True)
