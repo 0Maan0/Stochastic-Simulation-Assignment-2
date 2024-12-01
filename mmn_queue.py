@@ -50,7 +50,7 @@ class sims():
         rho (float, optional): System load factor (ρ). If provided, it overrides `mu`.
         sjf (bool, optional): Default false, determines if Shortest Job First (SJF) scheduling is enabled.
         deterministic (bool, optional): Default false, determines if deterministic service times (M/D/1) is used.
-        tail (bool, optional): default False, determines if a long-tail (hyperexponential) distribution for service timesis used.
+        tail (bool, optional): default False, determines if a long-tail (hyperexponential) distribution for service times is used.
 
         Raises:
             ValueError: If the system load factor (ρ) is greater than or equal to 1, indicating an unstable system.

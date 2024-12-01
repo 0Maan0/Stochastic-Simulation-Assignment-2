@@ -28,8 +28,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mmn_queue import sims
 
-plt.rc('text', usetex=True)
-plt.rc('font', family='serif')
+#plt.rc('text', usetex=True)
+#plt.rc('font', family='serif')
 
 
 def plot_mean_waiting_times(lam, mu, n_list, rho_values, num_simulations, max_customers, starting_amount, method = 'fifo'):
@@ -125,6 +125,36 @@ def plot_mean_waiting_times(lam, mu, n_list, rho_values, num_simulations, max_cu
     plt.show()
 
 
+def plot_sfj_vs_fifo(lam, mu, n, rho=0.9):
+    """."""
+
+    #Perform SJF simulation.
+    sim_sjf = sims(lam, mu, n, rho, sjf=True)
+    sim_sjf.simulate_queue()
+
+    #Perform FIFO simulation.
+    sim_fifo = sims(lam, mu, n, rho, sjf=False)
+    sim_fifo.simulate_queue()
+
+    fig, ax = plt.subplots(1, 2, sharey=True, sharex=True, gridspec_kw={'wspace': 0.05})
+
+    ax[0].scatter(sim_sjf.service_time_list, sim_sjf.waiting_times, marker='.', label='SJF', s=50, lw=0)
+    ax[1].scatter(sim_fifo.service_time_list, sim_fifo.waiting_times, marker='.', label='FIFO', s=50, lw=0)
+    ax[0].set_ylabel(r'Waiting Time ($t_w$)')
+    ax[0].set_xlabel(r'Service Time ($t_s$)')
+    ax[1].set_xlabel(r'Service Time ($t_s$)')
+    ax[0].legend()
+    ax[1].legend()
+
+    plt.savefig(
+        f'Figures/sjf_vs_fifo_n{n}_rho{rho}.pdf',
+        bbox_inches='tight', format='pdf'
+    )
+    plt.show()
+
+    return
+
+
 #Set appropriate parameters: lambda, mu, rho, number of simulations, max customers and starting value.
 LAMBDA = 1
 MU = 1.2
@@ -134,8 +164,15 @@ MAX_CUST = 1000
 START = 10
 n_list = [1, 2, 4]
 
+lam = 1
+mu = 1.2
+n = 1
+
 #Plot for FIFO.
-plot_mean_waiting_times(LAMBDA, MU, n_list, rho_list, NUM_SIM, MAX_CUST, START)
+#plot_mean_waiting_times(LAMBDA, MU, n_list, rho_list, NUM_SIM, MAX_CUST, START)
 
 #Plot for SJF.
-plot_mean_waiting_times(LAMBDA, MU, n_list, rho_list, NUM_SIM, MAX_CUST, START, method='sjf')
+#plot_mean_waiting_times(LAMBDA, MU, n_list, rho_list, NUM_SIM, MAX_CUST, START, method='sjf')
+
+#Plot SFJ vs FIFO.
+plot_sfj_vs_fifo(lam, mu, n, rho=0.9)
