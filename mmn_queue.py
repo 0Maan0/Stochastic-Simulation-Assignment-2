@@ -7,21 +7,43 @@ import simpy
 
 
 class sims():
-    """docstring here"""
+    """ 
+    Simulates an an M/M/n or M/M/1 queuing system with either a short-job-first or FIFO scheduling system.
+
+    This class models the arrival, service, and departure of customers in a queuing system using 
+    the SimPy library. It can handle various configurations of queuing systems, including:
+    - Multi-server queues (M/M/n)
+    - Single-server queues with deterministic service times (M/D/1)
+    - Queues with Shortest Job First (SJF) scheduling
+    - Queues with long-tail service time distributions.
+    """
+
 
     def __init__(self, lam, mu, n, rho=None, sjf=False, deterministic=False, tail=False):
         '''
         Calculate the system load of an M/M/n queue. or M/D/1 queue if deterministic
-        return: float
+        
+        Parameters:
+        lam (float): Arrival rate (λ) of customers into the system.
+        mu (float): Service rate (μ) of servers.
+        n (int): Number of servers in the system.
+        rho (float, optional): System load factor (ρ). If provided, it overrides `mu`.
+        sjf (bool, optional): Default false, determines if Shortest Job First (SJF) scheduling is enabled.
+        deterministic (bool, optional): Default false, determines if deterministic service times (M/D/1) is used.
+        tail (bool, optional): default False, determines if a long-tail (hyperexponential) distribution for service timesis used.
+
+        Raises:
+            ValueError: If the system load factor (ρ) is greater than or equal to 1, indicating an unstable system.
         '''
 
         self.lam = lam
         self.n = n
 
         if rho is not None:
-            # setting rho ignores given mu
+            #Setting rho ignores the given mu.
             self.rho = rho
             self.mu = lam/n/rho
+
         else:
             self.rho = lam / (n*mu)
             self.mu = mu
@@ -35,44 +57,48 @@ class sims():
 
     def service(self, service_time, priority):
         '''
-        The traject of a customer in the system. (Arrival -> Service -> Departure).
+        Models the service process for a single customer, including their waiting time and service duration.
         '''
+
         arrive = self.env.now
+
         with self.server.request(priority=priority) as req:
-            yield req # Wait until the request is granted.
+            yield req #Wait until the request is granted.
             wait = self.env.now - arrive
 
             self.waiting_times.append(wait)
             self.service_time_list.append(service_time)
 
-            yield self.env.timeout(service_time) # Wait for the service to finish.
+            yield self.env.timeout(service_time) #Wait for the service to finish.
 
     
     def source(self, max_customers):
         '''
-        Generate customers at rate lambda.
+        Generates customer arrivals according to the specified arrival rate (λ).
         '''
+
         for _ in range(max_customers):
-            inter_arrival = np.random.exponential(1/self.lam) # Time between arrivals.
+            #Determine the time between arrivals.
+            inter_arrival = np.random.exponential(1/self.lam) 
             yield self.env.timeout(inter_arrival)
 
-
+            #Determintistic distribution. 1/mu M/D/n.
             if self.deterministic:
-                # determintistic dist. 1/mu m/d/n
                 service_time = 1 / self.mu
 
+            #Long-tail distribution, hyperexponential. 
             elif self.tail:
-                # long-tail dist. hyperexponential. 
                 if np.random.rand() <= 0.25:
                     service_time = np.random.exponential(5)
                 else:
                     service_time = np.random.exponential(1)
+            
+            #Exponential distribution, M/M/n.
             else:
-                # exponential dist. m/m/n
                 service_time = np.random.exponential(1/self.mu)
 
+            #Set the priority based on service time value.
             if self.sjf:
-                #  set priority based on service time value
                 priority = int(service_time*1000)
             else:
                 priority = 0
@@ -82,12 +108,13 @@ class sims():
 
     def simulate_queue(self, max_customers = 10000, seed=None):
         '''
-        Start environment and run the simulation.
-        return: list
+        Simulates the queueing system and returns a list of waiting times for all customers.
+        Return: list of waiting times.
         '''
-        # lists used for tracking sim
-        self.waiting_times = [] # time waited, result of sim
-        self.service_time_list = [] # follows M dist.
+
+        #Lists used for tracking the simulation.
+        self.waiting_times = [] #Time waited, result of sim.
+        self.service_time_list = [] #Follows M distributions.
 
         if seed:
             np.random.seed(seed)
@@ -95,9 +122,9 @@ class sims():
         self.env = simpy.Environment()
         self.server = simpy.PriorityResource(self.env, capacity=self.n)
 
-
         self.env.process(self.source(max_customers))
         self.env.run()
+        
         return self.waiting_times
 
 """
