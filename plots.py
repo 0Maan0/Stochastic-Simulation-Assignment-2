@@ -5,12 +5,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mmn_queue import sims
 
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
 def plot_mean_waiting_times(lambd, mu, n_list, rho_values, num_simulations, max_customers, starting_amount, method = 'fifo'):
     '''
     Plot the mean of the mean waiting times for a certain number of simulations. 
     '''
-    FONTSIZE = 20
+    FONTSIZE = 25
     COLORS = ['tab:blue', 'tab:orange', 'tab:green']  
+    hfont = {'fontname':'Serif'}
 
     fig, axes = plt.subplots(1, len(rho_values), figsize=(len(rho_values)*5, 5), sharey=True)
 
@@ -46,18 +50,19 @@ def plot_mean_waiting_times(lambd, mu, n_list, rho_values, num_simulations, max_
 
             ax.fill_between(x_values, mean_values - std_values, mean_values + std_values, color=COLORS[j], alpha=0.2, label=rf'$\rho={rho}$')
             ax.plot(x_values, mean_values, color=COLORS[j])
-            ax.axhline(np.mean(mean_values), color=COLORS[j], linestyle='--', label=f'Mean: {np.mean(mean_values):.2f}')
+
+            ax.axhline(np.mean(mean_values), color=COLORS[j], linestyle='--')
             
             if ax == axes[0]:
                 ax.set_ylabel('Mean Waiting Time', fontsize=FONTSIZE)
-                ax.legend(loc = 'upper left', fontsize=FONTSIZE-2)
+                ax.legend(loc = 'upper left', fontsize=FONTSIZE-4)
             if ax == axes[1]:
                 ax.set_xlabel('Number of Simulations', fontsize=FONTSIZE)
         
-            ax.text(0.95, 0.95, f'n ={n}', transform=ax.transAxes, fontsize=FONTSIZE-2,
+            ax.text(0.95, 0.95, f'n ={n}', transform=ax.transAxes, fontsize=FONTSIZE-3,
             verticalalignment='top', horizontalalignment='right')
-            ax.tick_params(axis='x', labelsize=FONTSIZE-2)
-            ax.tick_params(axis='y', labelsize=FONTSIZE-2)
+            ax.tick_params(axis='x', labelsize=FONTSIZE-4)
+            ax.tick_params(axis='y', labelsize=FONTSIZE-4)
     plt.tight_layout()
     plt.savefig(f'Figures\mean_waiting_times_{method}.pdf', bbox_inches='tight', format='pdf')
     plt.show()
@@ -69,7 +74,7 @@ MU = 1.2
 rho_list = [0.8, 0.9, 0.99]
 NUM_SIM = 250
 MAX_CUST = 1000
-START = 11
+START = 10
 n_list = [1, 2, 4]
 plot_mean_waiting_times(LAMBDA, MU, n_list, rho_list, NUM_SIM, MAX_CUST, START) # Plot for fifo
 plot_mean_waiting_times(LAMBDA, MU, n_list, rho_list, NUM_SIM, MAX_CUST, START, method='sjf') # Plot for sjf
