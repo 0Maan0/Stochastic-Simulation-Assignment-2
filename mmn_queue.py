@@ -1,6 +1,26 @@
-'''
-This module contains the main implementation of an M/M/N queue simulation.
-'''
+"""
+This module simulates and analyzes queuing systems using the SimPy library. 
+It includes the 'sims' class, which allows for the modeling of various queue configurations and 
+scheduling policies.
+
+Key Features:
+- Models M/M/n and M/D/1 queuing systems.
+- Supports First-In-First-Out (FIFO) and Shortest Job First (SJF) scheduling.
+- Includes options for deterministic service times and long-tail service time distributions.
+- Simulates customer behavior from arrival through service completion.
+
+Classes:
+- sims: Represents a queueing system with configurable parameters for arrival rate, service rate, 
+  number of servers, scheduling method, and service time distribution.
+
+Dependencies:
+- numpy: Random number generation and Numerical computations.
+- simpy: Event-driven simulation of queuing system.
+
+Raise:
+- Raises 'ValueError' if the system load (ρ) is unstable (i.e., ρ >= 1).
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import simpy
@@ -54,6 +74,7 @@ class sims():
         self.sjf = sjf
         self.deterministic = deterministic
         self.tail = tail
+
 
     def service(self, service_time, priority):
         '''
@@ -124,7 +145,7 @@ class sims():
 
         self.env.process(self.source(max_customers))
         self.env.run()
-        
+
         return self.waiting_times
 
 """
