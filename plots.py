@@ -14,7 +14,6 @@ def plot_mean_waiting_times(lambd, mu, n_list, rho_values, num_simulations, max_
     '''
     FONTSIZE = 25
     COLORS = ['tab:blue', 'tab:orange', 'tab:green']  
-    hfont = {'fontname':'Serif'}
 
     fig, axes = plt.subplots(1, len(rho_values), figsize=(len(rho_values)*5, 5), sharey=True)
 
@@ -62,7 +61,10 @@ def plot_mean_waiting_times(lambd, mu, n_list, rho_values, num_simulations, max_
             ax.text(0.95, 0.95, f'n ={n}', transform=ax.transAxes, fontsize=FONTSIZE-3,
             verticalalignment='top', horizontalalignment='right')
             ax.tick_params(axis='x', labelsize=FONTSIZE-4)
-            ax.tick_params(axis='y', labelsize=FONTSIZE-4)
+            ax.tick_params(axis='y', labelsize=FONTSIZE-4, )
+            if method == 'fifo':
+                ax.set_yticks([5, 10, 15, 20, 25, 30, 35, 40])
+
     plt.tight_layout()
     plt.savefig(f'Figures\mean_waiting_times_{method}.pdf', bbox_inches='tight', format='pdf')
     plt.show()
