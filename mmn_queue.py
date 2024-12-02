@@ -93,10 +93,10 @@ class sims():
 
 
     def service(self, service_time, priority):
-        '''
+        """
         Models the service process for a single customer, including
         their waiting time and service duration.
-        '''
+        """
 
         arrive = self.env.now
 

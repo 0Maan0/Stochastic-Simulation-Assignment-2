@@ -11,6 +11,8 @@ Key Features:
     - Supports various queuing methods, including FIFO 
       (First-In-First-Out), SJF (Shortest Job First), deterministic 
       service times (M/D/1), and long-tail service time distributions.
+    - Compares scheduling methods (FIFO vs. SJF) using scatter plots of
+      waiting times vs. service times.
 
 Usage Example:
     - Run the module to generate plots for FIFO and SJF queueing methods.
@@ -27,10 +29,10 @@ The generated plots display:
       various 'ρ' values.
 """
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+
 from mmn_queue import sims
 
 plt.rc('text', usetex=True)
@@ -63,16 +65,16 @@ def plot_mean_waiting_times(lam, mu, n_list, rho_values, num_simulations,
               distribution.
 
     Outputs:
-        A PDF plot, saved to `Figures/` directory, showing mean waiting 
-        times and their standard deviations as shaded regions for 
-        different values of 'ρ' and 'n'.
+        - A PDF plot, saved to `Figures/` directory, showing mean 
+          waiting times and their standard deviations as shaded regions 
+          for different values of 'ρ' and 'n'.
 
     Raises:
         ValueError: If an invalid `method` is provided.
     """
 
-    FONTSIZE = 25
-    COLORS = ['tab:blue', 'tab:orange', 'tab:green']  
+    font_size = 25
+    colors = ['tab:blue', 'tab:orange', 'tab:green']  
 
     fig, axes = plt.subplots(1, len(rho_values), 
                              figsize=(len(rho_values)*5, 5), sharey=True)
@@ -117,24 +119,24 @@ def plot_mean_waiting_times(lam, mu, n_list, rho_values, num_simulations,
             std_values = np.array(std_values)
 
             ax.fill_between(x_values, mean_values - std_values, mean_values 
-                            + std_values, color=COLORS[j], alpha=0.2, 
+                            + std_values, color=colors[j], alpha=0.2, 
                             label=rf'$\rho={rho}$')
-            ax.plot(x_values, mean_values, color=COLORS[j])
+            ax.plot(x_values, mean_values, color=colors[j])
 
-            ax.axhline(np.mean(mean_values), color=COLORS[j], linestyle='--')
+            ax.axhline(np.mean(mean_values), color=colors[j], linestyle='--')
             
             if ax == axes[0]:
-                ax.set_ylabel('Mean Waiting Time', fontsize=FONTSIZE)
-                ax.legend(loc = 'upper left', fontsize=FONTSIZE-4)
+                ax.set_ylabel('Mean Waiting Time', fontsize=font_size)
+                ax.legend(loc = 'upper left', fontsize=font_size-4)
 
             if ax == axes[1]:
-                ax.set_xlabel('Number of Simulations', fontsize=FONTSIZE)
+                ax.set_xlabel('Number of Simulations', fontsize=font_size)
         
             ax.text(0.95, 0.95, f'n ={n}', transform=ax.transAxes, 
-            fontsize=FONTSIZE-3, verticalalignment='top', 
+            fontsize=font_size-3, verticalalignment='top', 
             horizontalalignment='right')
-            ax.tick_params(axis='x', labelsize=FONTSIZE-4)
-            ax.tick_params(axis='y', labelsize=FONTSIZE-4)
+            ax.tick_params(axis='x', labelsize=font_size-4)
+            ax.tick_params(axis='y', labelsize=font_size-4)
             if method == 'fifo':
                 ax.set_yticks([5, 10, 15, 20, 25, 30, 35, 40])
 
@@ -161,7 +163,7 @@ def plot_sfj_vs_fifo(lam, mu, n, rho=0.9):
             - Left: SJF waiting times vs. service times.
             - Right: FIFO waiting times vs. service times.
     """
-    FONTSIZE = 29
+    font_size = 29
 
     #Perform SJF simulation.
     sim_sjf = sims(lam, mu, n, rho, sjf=True)
@@ -178,41 +180,40 @@ def plot_sfj_vs_fifo(lam, mu, n, rho=0.9):
                   label='SJF', s=25, lw=0, color='tab:blue')
     ax[1].scatter(sim_fifo.service_time_list, sim_fifo.waiting_times, 
                   marker='.', label='FIFO', s=25, lw=0, color='tab:green')
-    ax[0].set_ylabel(r'Waiting Time ($t_w$)', fontsize=FONTSIZE)
-    ax[0].set_xlabel(r'Service Time ($t_s$)', fontsize=FONTSIZE)
-    ax[1].set_xlabel(r'Service Time ($t_s$)', fontsize=FONTSIZE)
-    lgnd1 = ax[0].legend(fontsize=FONTSIZE-5, markerscale=2)
-    lgnd2 = ax[1].legend(fontsize=FONTSIZE-5, markerscale=2)
-    ax[0].tick_params(axis='x', labelsize=FONTSIZE-4)
-    ax[1].tick_params(axis='x', labelsize=FONTSIZE-4)
-    ax[0].tick_params(axis='y', labelsize=FONTSIZE-4)
+
+    ax[0].set_ylabel(r'Waiting Time ($t_w$)', fontsize=font_size)
+    ax[0].set_xlabel(r'Service Time ($t_s$)', fontsize=font_size)
+    ax[1].set_xlabel(r'Service Time ($t_s$)', fontsize=font_size)
+
+    lgnd1 = ax[0].legend(fontsize=font_size-5, markerscale=2)
+    lgnd2 = ax[1].legend(fontsize=font_size-5, markerscale=2)
+
+    ax[0].tick_params(axis='x', labelsize=font_size-4)
+    ax[1].tick_params(axis='x', labelsize=font_size-4)
+    ax[0].tick_params(axis='y', labelsize=font_size-4)
     ax[0].set_yscale('log')
     ax[1].set_yscale('log')
 
-    plt.savefig(f'Figures\sjf_vs_fifo_n{n}_rho{rho}.pdf', bbox_inches='tight', format='pdf')
+    plt.savefig(f'Figures\sjf_vs_fifo_n{n}_rho{rho}.pdf', bbox_inches='tight', 
+                format='pdf')
     plt.show()
 
 
 #Set appropriate parameters.
-LAMBDA = 1
-MU = 1.2
-rho_list = [0.8, 0.9, 0.99]
-NUM_SIM = 250
-MAX_CUST = 1000
-START = 10
-n_list = [1, 2, 4]
-
 lam = 1
 mu = 1.2
-n = 1
+rho_list = [0.8, 0.9, 0.99]
+num_sim = 250
+max_cust = 1000
+start = 10
+n_list = [1, 2, 4]
 
 #Plot for FIFO.
-plot_mean_waiting_times(LAMBDA, MU, n_list, rho_list, NUM_SIM, MAX_CUST, START)
+plot_mean_waiting_times(lam, mu, n_list, rho_list, num_sim, max_cust, start)
 
 #Plot for SJF.
-plot_mean_waiting_times(LAMBDA, MU, n_list, rho_list, NUM_SIM, MAX_CUST, 
-                        START, method='sjf')
+plot_mean_waiting_times(lam, mu, n_list, rho_list, num_sim, max_cust, 
+                        start, method='sjf')
 
 #Plot SFJ vs FIFO.
-plot_sfj_vs_fifo(lam, mu, n, rho=0.9)
-# plot_sfj_vs_fifo(lam, mu, n, rho=0.99)
+plot_sfj_vs_fifo(lam, mu, n=1, rho=0.9)
