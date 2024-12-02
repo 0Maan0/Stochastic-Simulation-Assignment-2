@@ -30,10 +30,11 @@ The generated plots display:
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 from mmn_queue import sims
 
-#plt.rc('text', usetex=True)
-#plt.rc('font', family='serif')
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
 
 
 def plot_mean_waiting_times(lam, mu, n_list, rho_values, num_simulations, 
@@ -159,6 +160,7 @@ def plot_sfj_vs_fifo(lam, mu, n, rho=0.9):
             - Left: SJF waiting times vs. service times.
             - Right: FIFO waiting times vs. service times.
     """
+    FONTSIZE = 20
 
     #Perform SJF simulation.
     sim_sjf = sims(lam, mu, n, rho, sjf=True)
@@ -172,22 +174,29 @@ def plot_sfj_vs_fifo(lam, mu, n, rho=0.9):
                            gridspec_kw={'wspace': 0.05})
 
     ax[0].scatter(sim_sjf.service_time_list, sim_sjf.waiting_times, marker='.',
-                  label='SJF', s=50, lw=0)
+                  label='SJF', s=25, lw=0, color='tab:blue')
     ax[1].scatter(sim_fifo.service_time_list, sim_fifo.waiting_times, 
-                  marker='.', label='FIFO', s=50, lw=0)
-    ax[0].set_ylabel(r'Waiting Time ($t_w$)')
-    ax[0].set_xlabel(r'Service Time ($t_s$)')
-    ax[1].set_xlabel(r'Service Time ($t_s$)')
-    ax[0].legend()
-    ax[1].legend()
+                  marker='.', label='FIFO', s=25, lw=0, color='tab:green')
+    ax[0].set_ylabel(r'Waiting Time ($t_w$)', fontsize=FONTSIZE)
+    ax[0].set_xlabel(r'Service Time ($t_s$)', fontsize=FONTSIZE)
+    ax[1].set_xlabel(r'Service Time ($t_s$)', fontsize=FONTSIZE)
+    ax[0].legend(fontsize=FONTSIZE-4)
+    ax[1].legend(fontsize=FONTSIZE-4)
+    ax[0].tick_params(axis='x', labelsize=FONTSIZE+2)
+    ax[1].tick_params(axis='x', labelsize=FONTSIZE+2)
+    ax[0].tick_params(axis='y', labelsize=FONTSIZE+2)
+    #ax[0].set_yticks([1e-3, 1e-1, 1e1, 1e3])
+    #ax[0].get_yaxis().set_major_formatter(ticker.ScalarFormatter())
+    # ax[0].set_xticks([0, 2, 4, 6, 8, ])
+    # ax[1].set_xticks([0, 2, 4, 6, 8, 10])
+    ax[0].set_yscale('log')
+    ax[1].set_yscale('log')
 
     plt.savefig(
-        f'Figures/sjf_vs_fifo_n{n}_rho{rho}.pdf',
+        rf'/home/wouter/Dropbox/Apps/Overleaf/Stochastic_simulation_assignment_2/Figures/sjf_vs_fifo_n{n}_rho{rho}.pdf',
         bbox_inches='tight', format='pdf'
     )
     plt.show()
-
-    return
 
 
 #Set appropriate parameters.
@@ -204,11 +213,12 @@ mu = 1.2
 n = 1
 
 #Plot for FIFO.
-plot_mean_waiting_times(LAMBDA, MU, n_list, rho_list, NUM_SIM, MAX_CUST, START)
+#plot_mean_waiting_times(LAMBDA, MU, n_list, rho_list, NUM_SIM, MAX_CUST, START)
 
 #Plot for SJF.
-plot_mean_waiting_times(LAMBDA, MU, n_list, rho_list, NUM_SIM, MAX_CUST, 
-                        START, method='sjf')
+# plot_mean_waiting_times(LAMBDA, MU, n_list, rho_list, NUM_SIM, MAX_CUST, 
+#                         START, method='sjf')
 
 #Plot SFJ vs FIFO.
 plot_sfj_vs_fifo(lam, mu, n, rho=0.9)
+# plot_sfj_vs_fifo(lam, mu, n, rho=0.99)
