@@ -172,7 +172,7 @@ def plot_sfj_vs_fifo(lam, mu, n, rho=0.9):
     sim_fifo.simulate_queue()
 
     fig, ax = plt.subplots(1, 2, sharey=True, sharex=True,
-                           gridspec_kw={'wspace': 0.05})
+                           gridspec_kw={'wspace': 0.05}, figsize=(12, 6))
 
     ax[0].scatter(sim_sjf.service_time_list, sim_sjf.waiting_times, marker='.',
                   label='SJF', s=25, lw=0, color='tab:blue')
@@ -183,9 +183,9 @@ def plot_sfj_vs_fifo(lam, mu, n, rho=0.9):
     ax[1].set_xlabel(r'Service Time ($t_s$)', fontsize=FONTSIZE)
     ax[0].legend(fontsize=FONTSIZE-4)
     ax[1].legend(fontsize=FONTSIZE-4)
-    ax[0].tick_params(axis='x', labelsize=FONTSIZE+2)
-    ax[1].tick_params(axis='x', labelsize=FONTSIZE+2)
-    ax[0].tick_params(axis='y', labelsize=FONTSIZE+2)
+    ax[0].tick_params(axis='x', labelsize=FONTSIZE-3)
+    ax[1].tick_params(axis='x', labelsize=FONTSIZE-3)
+    ax[0].tick_params(axis='y', labelsize=FONTSIZE-3)
     #ax[0].set_yticks([1e-3, 1e-1, 1e1, 1e3])
     #ax[0].get_yaxis().set_major_formatter(ticker.ScalarFormatter())
     # ax[0].set_xticks([0, 2, 4, 6, 8, ])
@@ -193,10 +193,10 @@ def plot_sfj_vs_fifo(lam, mu, n, rho=0.9):
     ax[0].set_yscale('log')
     ax[1].set_yscale('log')
 
-    plt.savefig(
-        rf'/home/wouter/Dropbox/Apps/Overleaf/Stochastic_simulation_assignment_2/Figures/sjf_vs_fifo_n{n}_rho{rho}.pdf',
-        bbox_inches='tight', format='pdf'
-    )
+    #plt.savefig(
+    #    rf'/home/wouter/Dropbox/Apps/Overleaf/Stochastic_simulation_assignment_2/Figures/sjf_vs_fifo_n{n}_rho{rho}.pdf',
+    #    bbox_inches='tight', format='pdf'
+    #)
     plt.show()
 
 
