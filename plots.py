@@ -133,7 +133,7 @@ def plot_mean_waiting_times(lam, mu, n_list, rho_values, num_simulations,
             fontsize=FONTSIZE-3, verticalalignment='top', 
             horizontalalignment='right')
             ax.tick_params(axis='x', labelsize=FONTSIZE-4)
-            ax.tick_params(axis='y', labelsize=FONTSIZE-4, )
+            ax.tick_params(axis='y', labelsize=FONTSIZE-4)
             if method == 'fifo':
                 ax.set_yticks([5, 10, 15, 20, 25, 30, 35, 40])
 
